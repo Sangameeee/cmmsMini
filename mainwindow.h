@@ -20,11 +20,22 @@ private slots:
 
     void on_loadButton_clicked();
 
+    void on_addRowButton_clicked();
+
+    void on_columnAddButton_clicked();
+
+    void on_buttonSub_clicked();
+
 private:
     Ui::MainWindow *ui;
     void TableWidgetDisplay();
+    void buttonDisplays();
     void storeTableValues();
     void loadTableValues();
+    void rowManipulation();
+    void columnManipulation();
+    void columnRemover();
+
 //private slots:
 //    void on_tableWidget_cellClicked(int row, int column);
 };
