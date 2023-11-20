@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include<Qfile>
 #include<QTextStream>
+#include"secwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -45,6 +46,7 @@ MainWindow::~MainWindow()
 //}
 void MainWindow::TableWidgetDisplay()
 {
+
     QTableWidget *table = ui->tableWidget;//creating a table object
     //setting up row number and columns.
     table->setRowCount(48);
@@ -86,6 +88,8 @@ void MainWindow::buttonDisplays()
 
     QPushButton *subColumnButton = ui->buttonSub;
 
+    QPushButton *clearButton = ui->clearButton;
+
     QVBoxLayout *rowLayout = new QVBoxLayout;
     rowLayout->addWidget(addRowButton);
     rowLayout->addWidget(rowEdit);
@@ -105,6 +109,7 @@ void MainWindow::buttonDisplays()
     hlayout->addWidget(lbutton);
     hlayout->addLayout(rowLayout);
     hlayout->addLayout(columnLayout);
+    hlayout->addWidget(clearButton);
 
 
 
@@ -148,6 +153,13 @@ void MainWindow::on_buttonSub_clicked()
 {
     columnRemover();
 }
+
+
+void MainWindow::on_clearButton_clicked()
+{
+    removeAll();
+}
+
 
 
 
@@ -233,6 +245,14 @@ void MainWindow::columnRemover()
 
 //    //inFile.close();
 //}
+void MainWindow::removeAll()//makes whole window blank
+{
+//    QTableWidget *table = ui->tableWidget;
+//    table->hide();
+    QWidget *centralWidget = this->centralWidget();
+    centralWidget->hide();
+
+}
 
 void MainWindow::storeTableValues()
 {
@@ -326,6 +346,7 @@ void MainWindow::loadTableValues()
         QMessageBox::critical(this, "Error Loading Table Values", "An error occurred while trying to load the table values from the file table_values.csv.");
     }
 }
+
 
 
 

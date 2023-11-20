@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include"secwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,8 +27,11 @@ private slots:
 
     void on_buttonSub_clicked();
 
+    void on_clearButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+    //secWindow *secwindow;
     void TableWidgetDisplay();
     void buttonDisplays();
     void storeTableValues();
@@ -35,6 +39,7 @@ private:
     void rowManipulation();
     void columnManipulation();
     void columnRemover();
+    void removeAll();
 
 //private slots:
 //    void on_tableWidget_cellClicked(int row, int column);
