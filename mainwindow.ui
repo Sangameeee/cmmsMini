@@ -83,7 +83,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Add Row</string>
+          <string>No of rows</string>
          </property>
         </widget>
        </item>
