@@ -23,6 +23,9 @@ set(PROJECT_SOURCES
         newid.cpp
         newid.h
         newid.ui
+        valwindow.cpp
+        valwindow.h
+        valwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

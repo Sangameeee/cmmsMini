@@ -29,6 +29,8 @@ private slots:
 
     void on_clearButton_clicked();
 
+    void on_calButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     //secWindow *secwindow;
@@ -40,6 +42,8 @@ private:
     void columnManipulation();
     void columnRemover();
     void removeAll();
+    void calculateValues();
+    bool isInteger(const QString&);
 
 //private slots:
 //    void on_tableWidget_cellClicked(int row, int column);
