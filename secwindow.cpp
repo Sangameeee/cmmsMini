@@ -3,6 +3,7 @@
 #include<QMessageBox>
 #include<Qfile>
 #include<QTextStream>
+#include"fileswindow.h"
 
 secWindow::secWindow(QWidget *parent) :
     QDialog(parent),
@@ -37,14 +38,13 @@ void secWindow::on_pushButton_clicked()
 
         if(username == userwrittenname && password == userwrittenpassword)
         {
-//
 //            hide();
-//            secDialog = new secdialog(this);
-//            secDialog->setWindowTitle("logined");
-//            secDialog->show();
+//            mainwindow = new MainWindow(this);
+//            mainwindow->show();
             hide();
-            mainwindow = new MainWindow(this);
-            mainwindow->show();
+            filesWindow *filewindow = new filesWindow(this);
+            filewindow->setWindowTitle("class");
+            filewindow->show();
 
         }else
         {

@@ -17,6 +17,7 @@ public:
 
 private:
     Ui::ValWindow *ui;
+
 };
 
 #endif // VALWINDOW_H
