@@ -156,22 +156,58 @@ void MainWindow::rowManipulation()
     QTableWidget *table = ui->tableWidget;
     QLineEdit *rowEdit = ui->lineEditR;
     QString rowInput = rowEdit->text();
-    QFile rowFile("row_value.txt");
-    if (rowFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        // Create a QTextStream associated with the file
-        QTextStream out(&rowFile);
+    QString inputText = ui->lineEditR->text();
 
-        // Write the QLineEdit text to the file
-        out << rowInput;
+    bool ok;
+    int intValue = inputText.toInt(&ok);
 
-        // Close the file
-        rowFile.close();
-    } else {
-        // Handle the case where the file could not be opened
-        qDebug() << "Error: Could not open the file for writing.";
+    if (rowInput.isEmpty())
+    {
+        // Handle empty input
+        QMessageBox::warning(this,"Error","Please Enter a value");
     }
-    int rowValues = rowInput.toInt();
-    table->setRowCount(rowValues);
+    else if (!ok)
+    {
+        // Handle non-numeric input
+        QMessageBox::warning(this,"Error","Please Enter a Numeric value");
+    }
+    else
+    {
+        QFile rowFile("row_value.txt");
+        if (rowFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            // Create a QTextStream associated with the file
+            QTextStream out(&rowFile);
+
+            // Write the QLineEdit text to the file
+            out << rowInput;
+
+            // Close the file
+            rowFile.close();
+        } else {
+            // Handle the case where the file could not be opened
+            qDebug() << "Error: Could not open the file for writing.";
+        }
+        int rowValues = rowInput.toInt();
+        int currentRowCount = table->rowCount();
+        if (rowValues < currentRowCount) {
+
+            QMessageBox::StandardButton reply = QMessageBox::question(this, "Warning", "Decreasing Row count may cause loss of data. Do you want to proceed?", QMessageBox::Yes | QMessageBox::No);
+            //this ask user iff he want to continue despite data loss or no
+
+            if (reply == QMessageBox::Yes) {
+                // Set the row count if user confirms
+                table->setRowCount(rowValues);
+            } else {
+                // Do not change the row count if user cancels
+                qDebug() << "No of row wasnt reduced!!!";
+            }
+        } else {
+            // No need for confirmation if row count is not being reduced
+            table->setRowCount(rowValues);
+        }
+
+    }
+
 }
 
 void MainWindow::columnManipulation()
@@ -180,6 +216,11 @@ void MainWindow::columnManipulation()
     QLineEdit *columnEdit = ui->lineEditC;
     QString columnInput = columnEdit->text();
     int columnNo = table->columnCount();
+    if (columnInput.isEmpty())
+    {
+        QMessageBox::warning(this, "Warning", "Column heading cannot be empty");
+        return;
+    }
 
     QStringList oldTitle;
     for(int col = 0; col<columnNo;++col)
