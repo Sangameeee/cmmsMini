@@ -161,30 +161,32 @@ void MainWindow::on_clearButton_clicked()
 }
 
 
+
+
 void MainWindow::rowManipulation()
 {
     QTableWidget *table = ui->tableWidget;
     QLineEdit *rowEdit = ui->lineEditR;
     QString rowInput = rowEdit->text();
     QString inputText = ui->lineEditR->text();
-    //QFile rowFile("row_value.txt");
+
     bool ok;
-    int intValue = inputText.toInt(&ok);  //SAURAV EDIT--- This is a method call on the inputText object. The toInt() method attempts to convert the string value in inputText to an integer value."&ok" is a pass-by-reference argument. It passes the address of the ok variable to the toInt() method. This allows the toInt() method to modify the value of the ok variable.If the inputText variable contains a valid integer representation, then the toInt() method will convert the value successfully, and the intValue variable will be assigned the converted value. The ok variable will be set to true.
-    if (inputText.isEmpty())
-    {
-        QMessageBox::warning(this,"Error","Please type a value"); //SAURAV EDIT --THIS CHECKS IF THE INPUT FROM USER IS EMPTY OR NOT
-    }
+    int intValue = inputText.toInt(&ok);
 
-    else if(!ok)
+    if (rowInput.isEmpty())
     {
-        QMessageBox::warning(this,"Error","Please enter a valid value");//SAURAV EDIT--- this is continuation of line 172 where the value of ok is set to 0 if input is string and 1 if input is int
+        // Handle empty input
+        QMessageBox::warning(this,"Error","Please Enter a value");
     }
-
+    else if (!ok)
+    {
+        // Handle non-numeric input
+        QMessageBox::warning(this,"Error","Please Enter a Numeric value");
+    }
     else
     {
         QFile rowFile("row_value.txt");
-        if (rowFile.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
+        if (rowFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
             // Create a QTextStream associated with the file
             QTextStream out(&rowFile);
 
@@ -193,34 +195,31 @@ void MainWindow::rowManipulation()
 
             // Close the file
             rowFile.close();
-        }
-        else
-        {
+        } else {
             // Handle the case where the file could not be opened
             qDebug() << "Error: Could not open the file for writing.";
         }
-
-        int rowValues = rowInput.toInt();//SAURAV EDIT--- its your input in no. of rows text box
-        int currentRowCount = table->rowCount();//SAURAV RDIT--- its the number of current row
-
-        if (rowValues < currentRowCount)//SAURAV EDIT---- it checks if the no of rows you want is smaller than the no of rows we currently have
-        {
+        int rowValues = rowInput.toInt();
+        int currentRowCount = table->rowCount();
+        if (rowValues < currentRowCount) {
 
             QMessageBox::StandardButton reply = QMessageBox::question(this, "Warning", "Decreasing Row count may cause loss of data. Do you want to proceed?", QMessageBox::Yes | QMessageBox::No);
-            //SAURAV EDIT--- this ask user iff he want to continue despite data loss or no
+            //this ask user iff he want to continue despite data loss or no
 
             if (reply == QMessageBox::Yes) {
-                //SAURAV EDIT--- Set the row count if user confirms
+                // Set the row count if user confirms
                 table->setRowCount(rowValues);
             } else {
-                //SAURAV EDIT---  Do not change the row count if user cancels
+                // Do not change the row count if user cancels
                 qDebug() << "No of row wasnt reduced!!!";
             }
         } else {
-            //SAURAV EDIT--- No need for confirmation from you if row count is not being reduced
+            // No need for confirmation if row count is not being reduced
             table->setRowCount(rowValues);
         }
+
     }
+
 }
 
 void MainWindow::columnManipulation()
@@ -229,6 +228,11 @@ void MainWindow::columnManipulation()
     QLineEdit *columnEdit = ui->lineEditC;
     QString columnInput = columnEdit->text();
     int columnNo = table->columnCount();
+    if (columnInput.isEmpty())
+    {
+        QMessageBox::warning(this, "Warning", "Column heading cannot be empty");
+        return;
+    }
 
     QStringList oldTitle;
     for(int col = 0; col<columnNo;++col)
