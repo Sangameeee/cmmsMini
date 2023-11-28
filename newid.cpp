@@ -48,6 +48,17 @@ void NewID::on_pushButton_clicked()
     } */
     QString username = ui->lineEdit_username2->text();
     QString password = ui->lineEdit_password2->text();
+
+    if (username.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Username cannot be empty");
+        return;
+    }
+
+    if (password.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Password cannot be empty");
+        return;
+    }
+
     QFile ufile("username.txt");
     QFile pfile("password.txt");
 
