@@ -24,37 +24,27 @@ NewID::~NewID()
 void NewID::on_pushButton_clicked()
 {
 
-    /* QString username = ui->lineE
-        QMessageBox::warning(this,"username notset"dit_username2->text();
-    //QString password = ui->lineEdit_password2->text();
-   /* std::string usernamec = username.toStdString();
-    std::ofstream out("username.txt");
-    if(out.is_open()){
-      out<<usernamec;
-        QMessageBox::about(this,"username set","written in file");
-      out.close();
-    }else{,"not written in file");
-    }
-    QFile file("username.txt");
-    if(file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        QTextStream stream(&file);
-        stream<<username;
-         QMessageBox::about(this,"username set","written in file");
-        file.close();
-    }
-    else{
-       QMessageBox::warning(this, "Error", "Failed to open the file for writing.");
-    } */
+
     QString username = ui->lineEdit_username2->text();
     QString password = ui->lineEdit_password2->text();
+
+    if (username.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Username cannot be empty");
+        return;
+    }
+
+    if (password.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Password cannot be empty");
+        return;
+    }
+
     QFile ufile("username.txt");
     QFile pfile("password.txt");
 
     if (!ufile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
 
-        QMessageBox::warning(this, "Error", "Failed to open the file for writing: " + ufile.errorString());
+        QMessageBox::warning(this, "Error", "Failed: " + ufile.errorString());
     }
     else
     {
@@ -66,16 +56,15 @@ void NewID::on_pushButton_clicked()
     if (!pfile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
 
-        QMessageBox::warning(this, "Error", "Failed to open the file for writing: " + pfile.errorString());
+        QMessageBox::warning(this, "Error", "Failed: " + pfile.errorString());
     }
     else
     {
         QTextStream stream(&pfile);
         stream << password;
         pfile.close();
-        QMessageBox::about(this, "Username set", "Username written to file");
+        QMessageBox::about(this, "Username set", "Username and Password created");
     }
 
 
 }
-

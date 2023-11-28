@@ -4,6 +4,7 @@
 #include <QDialog>
 #include"newid.h"
 #include"mainwindow.h"
+#include"fileswindow.h"
 
 namespace Ui {
 class secWindow;
@@ -26,6 +27,7 @@ private:
     Ui::secWindow *ui;
     NewID *newId;
     QMainWindow *mainwindow;
+    //filesWindow *filewindow;
 };
 
 #endif // SECWINDOW_H
