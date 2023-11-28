@@ -8,6 +8,7 @@
 #include<Qfile>
 #include<QTextStream>
 #include"secwindow.h"
+#include"valwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,31 +23,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//void MainWindow::TableWidgetDisplay()
-//{
-//    QTableWidget *table = ui->tableWidget;//creating a table object
-//    //setting up row number and columns
-//    table->setRowCount(48);
-//    table->setColumnCount(4);
-//    //for row topics
-//    QStringList hlabels;
-//    hlabels<<"Name"<<"Roll no"<<"Marks"<<"Assignements";
-//    table->setHorizontalHeaderLabels(hlabels);
-
-//    //showcasing table in a whole windows
-//    this->setCentralWidget(table);
-//    QPushButton *button = ui->pushButton;
-//    connect(button, &QPushButton::clicked, this, &MainWindow::on_pushButton_clicked);
-
-
-//     QTableWidgetItem *item;
-//     item = new QTableWidgetItem();
-//     item->setText("sangam");
-//     table->setItem(1,0,item);
-//}
 void MainWindow::TableWidgetDisplay()
 {
-
+    this->setWindowTitle("Table");
     QTableWidget *table = ui->tableWidget;//creating a table object
     //setting up row number and columns.
     table->setRowCount(48);
@@ -89,6 +68,7 @@ void MainWindow::buttonDisplays()
     QPushButton *subColumnButton = ui->buttonSub;
 
     QPushButton *clearButton = ui->clearButton;
+    QPushButton *calButton = ui->calButton;
 
     QVBoxLayout *rowLayout = new QVBoxLayout;
     rowLayout->addWidget(addRowButton);
@@ -110,7 +90,7 @@ void MainWindow::buttonDisplays()
     hlayout->addLayout(rowLayout);
     hlayout->addLayout(columnLayout);
     hlayout->addWidget(clearButton);
-
+    hlayout->addWidget(calButton);
 
 
 
@@ -159,7 +139,15 @@ void MainWindow::on_clearButton_clicked()
 {
     removeAll();
 }
+void MainWindow::on_calButton_clicked()
+{
+    //calculateValues();
 
+    ValWindow valuesWin(ui->tableWidget);
+    valuesWin.setWindowTitle("Values");
+    valuesWin.setModal(true);
+    valuesWin.exec();
+}
 
 
 
@@ -252,40 +240,8 @@ void MainWindow::columnRemover()
     table->setColumnCount(columnNo-1);
 }
 
-//void MainWindow::rowValueAdd()
-//{
-//    QTableWidget *table = ui->tableWidget;
-//    QFile inFile("row_value.txt");
-//    if((inFile.open(QIODevice::ReadOnly)&&inFile.open(QIODevice::ReadOnly)))
-//    {
-//        if(inFile.size()!=0)
-//        {
-//            QString readValue;
-//            QTextStream in(&inFile);
-//            in >> readValue;
-
-//            // Attempt to convert the string to an integer
-//            bool isNumeric;
-//            int intValue = readValue.toInt(&isNumeric);
-
-//            if (isNumeric) {
-//                table->setRowCount(intValue);
-//            } else {
-//                table->setRowCount(48);
-//            }
 
 
-//        }
-
-//        else
-//        {
-//            table->setRowCount(48);
-//        }
-//        inFile.close();
-//    }
-
-//    //inFile.close();
-//}
 void MainWindow::removeAll()//makes whole window blank
 {
 //    QTableWidget *table = ui->tableWidget;
@@ -293,6 +249,36 @@ void MainWindow::removeAll()//makes whole window blank
     QWidget *centralWidget = this->centralWidget();
     centralWidget->hide();
 
+}
+
+void MainWindow::calculateValues()
+{
+    QTableWidget *table = ui->tableWidget;
+
+    for (int row = 0; row < table->rowCount(); ++row) {
+        for (int col = 0; col < table->columnCount(); ++col) {
+            QTableWidgetItem *item = table->item(row, col);
+
+            // Convert the header text to lowercase for case-insensitive comparison
+            QString headerText = table->horizontalHeaderItem(col)->text().toLower();
+
+            // Check if the header is "marks" or "assessments" and the item is an integer
+            if ((headerText == "marks" || headerText == "assessments") && isInteger(item->text())) {
+                // Reduce the value by 10 times
+                int originalValue = item->text().toInt();
+                item->setText(QString::number(originalValue / 10));
+            }
+        }
+    }
+
+    QMessageBox::information(this, "Calculation Completed", "Values under 'Marks' and 'Assessments' headers reduced by 10 times.");
+}
+
+bool MainWindow::isInteger(const QString &text)
+{
+    bool isNumeric;
+    text.toInt(&isNumeric);
+    return isNumeric;
 }
 
 void MainWindow::storeTableValues()
@@ -372,7 +358,9 @@ void MainWindow::loadTableValues()
                 if (col < rowData.size()) {
                     QTableWidgetItem *item = new QTableWidgetItem(rowData.at(col));
                     table->setItem(row, col, item);
-                } else {
+                }
+                else
+                {
                     // Handle the case where the data is missing for a column
                     QTableWidgetItem *item = new QTableWidgetItem("");
                     table->setItem(row, col, item);
