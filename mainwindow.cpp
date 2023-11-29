@@ -1,18 +1,20 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-
-#include<QTableWidget>
-#include<QTableWidgetItem>
-#include<QMessageBox>
+#include "valwindow.h"
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QMessageBox>
 #include <QVBoxLayout>
-#include<Qfile>
-#include<QTextStream>
-#include"secwindow.h"
-#include"valwindow.h"
+#include <QFile>
+#include <QTextStream>
+#include <QInputDialog>
+#include<QFileDialog>
+#include <QDir>  // Added for QDir
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent),
+    ui(new Ui::MainWindow),
+    currentTableName("")
 {
     ui->setupUi(this);
     TableWidgetDisplay();
@@ -26,47 +28,37 @@ MainWindow::~MainWindow()
 void MainWindow::TableWidgetDisplay()
 {
     this->setWindowTitle("Table");
-    QTableWidget *table = ui->tableWidget;//creating a table object
-    //setting up row number and columns.
+    QTableWidget *table = ui->tableWidget;  // creating a table object
+    // setting up row number and columns.
     table->setRowCount(48);
 
-    //rowValueAdd();
-    //table->setRowCount(48);
     table->setColumnCount(5);
 
-    //for row topics
+    // for row topics
     QStringList hlabels;
-    hlabels<<"Name"<<"Roll no"<<"Marks"<<"Assignements"<<"Assessments"<<"Practicals";
+    hlabels << "Name" << "Roll no" << "Marks" << "Assignments" << "Assessments" << "Practicals";
     table->setHorizontalHeaderLabels(hlabels);
 
-    //showing table in a whole windows
+    // showing table in a whole windows
     this->setCentralWidget(table);
     buttonDisplays();
-
-
 }
 
 void MainWindow::buttonDisplays()
 {
     QTableWidget *table = ui->tableWidget;
     QPushButton *button = ui->pushButton;
-    //connect(button, &QPushButton::clicked, this, &MainWindow::on_pushButton_clicked);
-
     QPushButton *lbutton = ui->loadButton;
-    //connect(lbutton, &QPushButton::clicked, this, &MainWindow::on_loadButton_clicked);
-
     QLineEdit *rowEdit = ui->lineEditR;
     rowEdit->setPlaceholderText("No of rows");
 
     QPushButton *addRowButton = ui->addRowButton;
-    // connect(addRowButtonbutton, &QPushButton::clicked, this, &MainWindow::on_addRowButton_clicked);
     QPushButton *addColumnButton = ui->columnAddButton;
 
     QLineEdit *columnEdit = ui->lineEditC;
     columnEdit->setPlaceholderText("Write Heading title..");
 
     QPushButton *subColumnButton = ui->buttonSub;
-
     QPushButton *clearButton = ui->clearButton;
     QPushButton *calButton = ui->calButton;
 
@@ -74,13 +66,11 @@ void MainWindow::buttonDisplays()
     rowLayout->addWidget(addRowButton);
     rowLayout->addWidget(rowEdit);
 
-
-
     QHBoxLayout *columnHLayout = new QHBoxLayout;
     columnHLayout->addWidget(addColumnButton);
     columnHLayout->addWidget(subColumnButton);
 
-    QVBoxLayout *columnLayout= new QVBoxLayout;
+    QVBoxLayout *columnLayout = new QVBoxLayout;
     columnLayout->addLayout(columnHLayout);
     columnLayout->addWidget(columnEdit);
 
@@ -92,31 +82,34 @@ void MainWindow::buttonDisplays()
     hlayout->addWidget(clearButton);
     hlayout->addWidget(calButton);
 
-
-
-
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(table);
     layout->addLayout(hlayout);
-
-
 
     QWidget *centralWidget = new QWidget;
     centralWidget->setLayout(layout);
 
     this->setCentralWidget(centralWidget);
-}
 
+    // Connect signals and slots for the buttons
+//    connect(addRowButton, &QPushButton::clicked, this, &MainWindow::on_addRowButton_clicked);
+//    connect(addColumnButton, &QPushButton::clicked, this, &MainWindow::on_columnAddButton_clicked);
+//    connect(subColumnButton, &QPushButton::clicked, this, &MainWindow::on_buttonSub_clicked);
+//    connect(clearButton, &QPushButton::clicked, this, &MainWindow::on_clearButton_clicked);
+//    connect(calButton, &QPushButton::clicked, this, &MainWindow::on_calButton_clicked);
+//    connect(button, &QPushButton::clicked, this, &MainWindow::on_pushButton_clicked);
+//    connect(lbutton, &QPushButton::clicked, this, &MainWindow::on_loadButton_clicked);
+
+}
 
 void MainWindow::on_pushButton_clicked()
 {
     storeTableValues();
 }
 
-
 void MainWindow::on_loadButton_clicked()
 {
-    loadTableValues();
+    showAllTables();
 }
 
 void MainWindow::on_addRowButton_clicked()
@@ -134,22 +127,19 @@ void MainWindow::on_buttonSub_clicked()
     columnRemover();
 }
 
-
 void MainWindow::on_clearButton_clicked()
 {
     removeAll();
 }
+
 void MainWindow::on_calButton_clicked()
 {
-    //calculateValues();
-
-    ValWindow valuesWin(ui->tableWidget);
-    valuesWin.setWindowTitle("Values");
-    valuesWin.setModal(true);
-    valuesWin.exec();
+//    ValWindow valuesWin(ui->tableWidget);
+//    valuesWin.setWindowTitle("Values");
+//    valuesWin.setModal(true);
+//    valuesWin.exec();
+    calculateValues();
 }
-
-
 
 void MainWindow::rowManipulation()
 {
@@ -163,13 +153,11 @@ void MainWindow::rowManipulation()
 
     if (rowInput.isEmpty())
     {
-        // Handle empty input
-        QMessageBox::warning(this,"Error","Please Enter a value");
+        QMessageBox::warning(this, "Error", "Please Enter a value");
     }
     else if (!ok)
     {
-        // Handle non-numeric input
-        QMessageBox::warning(this,"Error","Please Enter a Numeric value");
+        QMessageBox::warning(this, "Error", "Please Enter a Numeric value");
     }
     else
     {
@@ -184,30 +172,21 @@ void MainWindow::rowManipulation()
             // Close the file
             rowFile.close();
         } else {
-            // Handle the case where the file could not be opened
             qDebug() << "Error: Could not open the file for writing.";
         }
         int rowValues = rowInput.toInt();
         int currentRowCount = table->rowCount();
         if (rowValues < currentRowCount) {
-
             QMessageBox::StandardButton reply = QMessageBox::question(this, "Warning", "Decreasing Row count may cause loss of data. Do you want to proceed?", QMessageBox::Yes | QMessageBox::No);
-            //this ask user iff he want to continue despite data loss or no
-
             if (reply == QMessageBox::Yes) {
-                // Set the row count if user confirms
                 table->setRowCount(rowValues);
             } else {
-                // Do not change the row count if user cancels
-                qDebug() << "No of row wasnt reduced!!!";
+                qDebug() << "No of row wasn't reduced!!!";
             }
         } else {
-            // No need for confirmation if row count is not being reduced
             table->setRowCount(rowValues);
         }
-
     }
-
 }
 
 void MainWindow::columnManipulation()
@@ -221,34 +200,28 @@ void MainWindow::columnManipulation()
         QMessageBox::warning(this, "Warning", "Column heading cannot be empty");
         return;
     }
-
     QStringList oldTitle;
-    for(int col = 0; col<columnNo;++col)
+    for (int col = 0; col < columnNo; ++col)
     {
-        oldTitle<<table->horizontalHeaderItem(col)->text();
+        oldTitle << table->horizontalHeaderItem(col)->text();
     }
-    table->setColumnCount(columnNo+1);
-    oldTitle<<columnInput;
+    table->setColumnCount(columnNo + 1);
+    oldTitle << columnInput;
     table->setHorizontalHeaderLabels(oldTitle);
-
 }
 
 void MainWindow::columnRemover()
 {
     QTableWidget *table = ui->tableWidget;
     int columnNo = table->columnCount();
-    table->setColumnCount(columnNo-1);
+    table->setColumnCount(columnNo - 1);
 }
 
 
-
-void MainWindow::removeAll()//makes whole window blank
+void MainWindow::removeAll()
 {
-//    QTableWidget *table = ui->tableWidget;
-//    table->hide();
     QWidget *centralWidget = this->centralWidget();
     centralWidget->hide();
-
 }
 
 void MainWindow::calculateValues()
@@ -258,13 +231,9 @@ void MainWindow::calculateValues()
     for (int row = 0; row < table->rowCount(); ++row) {
         for (int col = 0; col < table->columnCount(); ++col) {
             QTableWidgetItem *item = table->item(row, col);
-
-            // Convert the header text to lowercase for case-insensitive comparison
             QString headerText = table->horizontalHeaderItem(col)->text().toLower();
 
-            // Check if the header is "marks" or "assessments" and the item is an integer
             if ((headerText == "marks" || headerText == "assessments") && isInteger(item->text())) {
-                // Reduce the value by 10 times
                 int originalValue = item->text().toInt();
                 item->setText(QString::number(originalValue / 10));
             }
@@ -284,7 +253,13 @@ bool MainWindow::isInteger(const QString &text)
 void MainWindow::storeTableValues()
 {
     QTableWidget *table = ui->tableWidget;
-    QFile file("table_values.csv");
+    QString fileName = getSaveFileName();
+    if (fileName.isEmpty())
+    {
+        return;  // User canceled the operation
+    }
+
+    QFile file(fileName);
 
     // Check for empty cells and set red border
     for (int row = 0; row < table->rowCount(); ++row) {
@@ -333,11 +308,16 @@ void MainWindow::storeTableValues()
 
 void MainWindow::loadTableValues()
 {
+    QString fileName = getOpenFileName();
+    if (fileName.isEmpty())
+    {
+        QMessageBox::warning(this,"No filename","please give a filename."); // User canceled the operation
+    }
+
     QTableWidget *table = ui->tableWidget;
-    QFile file("table_values.csv");
+    QFile file(fileName);
 
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-
         QTextStream in(&file);
 
         // Read header
@@ -358,10 +338,7 @@ void MainWindow::loadTableValues()
                 if (col < rowData.size()) {
                     QTableWidgetItem *item = new QTableWidgetItem(rowData.at(col));
                     table->setItem(row, col, item);
-                }
-                else
-                {
-                    // Handle the case where the data is missing for a column
+                } else {
                     QTableWidgetItem *item = new QTableWidgetItem("");
                     table->setItem(row, col, item);
                 }
@@ -370,17 +347,103 @@ void MainWindow::loadTableValues()
 
         file.close();
         QMessageBox::information(this, "Table Values Loaded", "The table values were successfully loaded.");
-
     } else {
-        QMessageBox::critical(this, "Error Loading Table Values", "An error occurred while trying to load the table values from the file table_values.csv.");
+        QMessageBox::critical(this, "Error Loading Table Values", "An error occurred while trying to load the table values from the file.");
     }
 }
 
+void MainWindow::showAllTables()
+{
+    QDir dir("tables");
+    QStringList fileNames = dir.entryList(QStringList("*.csv"));
 
+    if (fileNames.isEmpty()) {
+        QMessageBox::information(this, "No Tables Found", "No tables found in the 'tables' directory.");
+        return;
+    }
 
+    QTableWidget tempTable;
+    QStringList tableNames;
 
+    for (const QString &fileName : fileNames) {
+        QFile file(dir.path() + "/" + fileName);
 
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QTextStream in(&file);
 
+            // Read header
+            QStringList headers = in.readLine().split(",");
+            tempTable.setColumnCount(headers.size());
+            tempTable.setHorizontalHeaderLabels(headers);
 
+            // Clear existing data
+            tempTable.clearContents();
+            tempTable.setRowCount(0);
+
+            // Read data
+            while (!in.atEnd()) {
+                QStringList rowData = in.readLine().split(",");
+                int row = tempTable.rowCount();
+                tempTable.insertRow(row);
+                for (int col = 0; col < headers.size(); ++col) {
+                    if (col < rowData.size()) {
+                        QTableWidgetItem *item = new QTableWidgetItem(rowData.at(col));
+                        tempTable.setItem(row, col, item);
+                    } else {
+                        QTableWidgetItem *item = new QTableWidgetItem("");
+                        tempTable.setItem(row, col, item);
+                    }
+                }
+            }
+
+            file.close();
+
+            tableNames << fileName + " (Preview)";
+        } else {
+            QMessageBox::critical(this, "Error Loading Table Values", "An error occurred while trying to load the table values from the file.");
+            return;
+        }
+    }
+
+    bool ok;
+    QString chosenTable = QInputDialog::getItem(this, "Choose a Table", "Select a table to load:", tableNames, 0, false, &ok);
+
+    if (ok && !chosenTable.isEmpty()) {
+        currentTableName = chosenTable;
+        loadTableValues();
+    }
+}
+
+QString MainWindow::getSaveFileName()
+{
+    QString directoryPath = QDir::currentPath() + "/tables";
+    QDir directory(directoryPath);
+
+    if (!directory.exists()) {
+        if (!directory.mkpath(".")) {
+            QMessageBox::critical(this, "Error Creating Directory", "Failed to create the 'tables' directory.");
+            return "";
+        }
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this, "Save Table", directoryPath, "CSV Files (*.csv)");
+
+    if (!fileName.endsWith(".csv", Qt::CaseInsensitive)) {
+        fileName += ".csv";
+    }
+
+    return fileName;
+}
+
+QString MainWindow::getOpenFileName()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Load Table", QDir::currentPath() + "/tables", "CSV Files (*.csv);;All Files (*)");
+
+    if (fileName.isEmpty()) {
+        QMessageBox::warning(this, "No filename", "Please select a file.");
+    }
+
+    return fileName;
+}
 
 

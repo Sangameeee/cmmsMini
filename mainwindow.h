@@ -44,6 +44,11 @@ private:
     void removeAll();
     void calculateValues();
     bool isInteger(const QString&);
+    void showAllTables();
+    QString getSaveFileName();
+    QString getOpenFileName();
+    QString currentTableName;
+
 
 //private slots:
 //    void on_tableWidget_cellClicked(int row, int column);

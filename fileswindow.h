@@ -21,6 +21,7 @@ private slots:
 
 private:
     Ui::filesWindow *ui;
+    void lineeditshow();
     QMainWindow *mainwindow;
 };
 
