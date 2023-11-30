@@ -134,11 +134,11 @@ void MainWindow::on_clearButton_clicked()
 
 void MainWindow::on_calButton_clicked()
 {
-//    ValWindow valuesWin(ui->tableWidget);
-//    valuesWin.setWindowTitle("Values");
-//    valuesWin.setModal(true);
-//    valuesWin.exec();
-    calculateValues();
+    ValWindow valuesWin(ui->tableWidget);
+    valuesWin.setWindowTitle("Values");
+    valuesWin.setModal(true);
+    valuesWin.exec();
+   // calculateValues();
 }
 
 void MainWindow::rowManipulation()
