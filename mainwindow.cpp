@@ -8,8 +8,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QInputDialog>
-#include<QFileDialog>
-#include <QDir>  // Added for QDir
+#include <QFileDialog>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     TableWidgetDisplay();
+
+    // Connect the header click event to the on_headerClicked slot
+    connect(ui->tableWidget->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(on_headerClicked(int)));
 }
 
 MainWindow::~MainWindow()
@@ -43,7 +46,6 @@ void MainWindow::TableWidgetDisplay()
     this->setCentralWidget(table);
     buttonDisplays();
 }
-
 void MainWindow::buttonDisplays()
 {
     QTableWidget *table = ui->tableWidget;
@@ -59,8 +61,7 @@ void MainWindow::buttonDisplays()
     columnEdit->setPlaceholderText("Write Heading title..");
 
     QPushButton *subColumnButton = ui->buttonSub;
-    QPushButton *clearButton = ui->clearButton;
-    QPushButton *calButton = ui->calButton;
+
 
     QVBoxLayout *rowLayout = new QVBoxLayout;
     rowLayout->addWidget(addRowButton);
@@ -79,12 +80,12 @@ void MainWindow::buttonDisplays()
     hlayout->addWidget(lbutton);
     hlayout->addLayout(rowLayout);
     hlayout->addLayout(columnLayout);
-    hlayout->addWidget(clearButton);
-    hlayout->addWidget(calButton);
+
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(table);
     layout->addLayout(hlayout);
+    layout->addWidget(table);
+
 
     QWidget *centralWidget = new QWidget;
     centralWidget->setLayout(layout);
@@ -92,16 +93,63 @@ void MainWindow::buttonDisplays()
     this->setCentralWidget(centralWidget);
 
     // Connect signals and slots for the buttons
-//    connect(addRowButton, &QPushButton::clicked, this, &MainWindow::on_addRowButton_clicked);
-//    connect(addColumnButton, &QPushButton::clicked, this, &MainWindow::on_columnAddButton_clicked);
-//    connect(subColumnButton, &QPushButton::clicked, this, &MainWindow::on_buttonSub_clicked);
-//    connect(clearButton, &QPushButton::clicked, this, &MainWindow::on_clearButton_clicked);
-//    connect(calButton, &QPushButton::clicked, this, &MainWindow::on_calButton_clicked);
-//    connect(button, &QPushButton::clicked, this, &MainWindow::on_pushButton_clicked);
-//    connect(lbutton, &QPushButton::clicked, this, &MainWindow::on_loadButton_clicked);
+    //    connect(addRowButton, &QPushButton::clicked, this, &MainWindow::on_addRowButton_clicked);
+    //    connect(addColumnButton, &QPushButton::clicked, this, &MainWindow::on_columnAddButton_clicked);
+    //    connect(subColumnButton, &QPushButton::clicked, this, &MainWindow::on_buttonSub_clicked);
+    //    connect(clearButton, &QPushButton::clicked, this, &MainWindow::on_clearButton_clicked);
+    //    connect(calButton, &QPushButton::clicked, this, &MainWindow::on_calButton_clicked);
+    //    connect(button, &QPushButton::clicked, this, &MainWindow::on_pushButton_clicked);
+    //    connect(lbutton, &QPushButton::clicked, this, &MainWindow::on_loadButton_clicked);
 
 }
+void MainWindow::on_headerClicked(int column)
+{
+    QTableWidget *table = ui->tableWidget;
 
+    // Get the column header name
+    QString columnHeader = table->horizontalHeaderItem(column)->text();
+
+    // Ask the user for the original and conversion total scores
+    bool ok;
+    int originalTotal = QInputDialog::getInt(this, "Enter Original Total Score", "Enter the original total score for column " + columnHeader + ":", 40, 0, 100, 1, &ok);
+
+    if (!ok)
+        return;  // User canceled the input
+
+    int conversionTotal = QInputDialog::getInt(this, "Enter Conversion Total Score", "Enter the conversion total score for column " + columnHeader + ":", 20, 0, 100, 1, &ok);
+
+    if (!ok)
+        return;  // User canceled the input
+
+    // Perform the conversion for the entire column
+    convertColumn(column, originalTotal, conversionTotal, columnHeader);
+}
+void MainWindow::convertColumn(int columnIndex, int originalTotal, int conversionTotal, const QString &columnName)
+{
+    QTableWidget *table = ui->tableWidget;
+
+    // Calculate the scaling factor
+    double scale = static_cast<double>(conversionTotal) / originalTotal;
+
+    // Iterate through the values in the clicked column and perform the conversion
+    for (int row = 0; row < table->rowCount(); ++row)
+    {
+        QTableWidgetItem *item = table->item(row, columnIndex);
+        if (item)
+        {
+            bool isNumeric;
+            double originalValue = item->text().toDouble(&isNumeric);
+            if (isNumeric)
+            {
+                // Perform the conversion using the provided formula
+                double convertedValue = (originalValue / originalTotal) * conversionTotal;
+                item->setText(QString::number(convertedValue));
+            }
+        }
+    }
+
+    QMessageBox::information(this, "Conversion Completed", QString("Values in the '%1' column converted based on original total %2 and conversion total %3.").arg(columnName).arg(originalTotal).arg(conversionTotal));
+}
 void MainWindow::on_pushButton_clicked()
 {
     storeTableValues();
@@ -127,19 +175,7 @@ void MainWindow::on_buttonSub_clicked()
     columnRemover();
 }
 
-void MainWindow::on_clearButton_clicked()
-{
-    removeAll();
-}
 
-void MainWindow::on_calButton_clicked()
-{
-//    ValWindow valuesWin(ui->tableWidget);
-//    valuesWin.setWindowTitle("Values");
-//    valuesWin.setModal(true);
-//    valuesWin.exec();
-    calculateValues();
-}
 
 void MainWindow::rowManipulation()
 {
@@ -218,30 +254,30 @@ void MainWindow::columnRemover()
 }
 
 
-void MainWindow::removeAll()
-{
-    QWidget *centralWidget = this->centralWidget();
-    centralWidget->hide();
-}
+//void MainWindow::removeAll()
+//{
+//    QWidget *centralWidget = this->centralWidget();
+//    centralWidget->hide();
+//}
 
-void MainWindow::calculateValues()
-{
-    QTableWidget *table = ui->tableWidget;
+//void MainWindow::calculateValues()
+//{
+//    QTableWidget *table = ui->tableWidget;
 
-    for (int row = 0; row < table->rowCount(); ++row) {
-        for (int col = 0; col < table->columnCount(); ++col) {
-            QTableWidgetItem *item = table->item(row, col);
-            QString headerText = table->horizontalHeaderItem(col)->text().toLower();
+//    for (int row = 0; row < table->rowCount(); ++row) {
+//        for (int col = 0; col < table->columnCount(); ++col) {
+//            QTableWidgetItem *item = table->item(row, col);
+//            QString headerText = table->horizontalHeaderItem(col)->text().toLower();
 
-            if ((headerText == "marks" || headerText == "assessments") && isInteger(item->text())) {
-                int originalValue = item->text().toInt();
-                item->setText(QString::number(originalValue / 10));
-            }
-        }
-    }
+//            if ((headerText == "marks" || headerText == "assessments") && isInteger(item->text())) {
+//                int originalValue = item->text().toInt();
+//                item->setText(QString::number(originalValue / 10));
+//            }
+//        }
+//    }
 
-    QMessageBox::information(this, "Calculation Completed", "Values under 'Marks' and 'Assessments' headers reduced by 10 times.");
-}
+//    QMessageBox::information(this, "Calculation Completed", "Values under 'Marks' and 'Assessments' headers reduced by 10 times.");
+//}
 
 bool MainWindow::isInteger(const QString &text)
 {
@@ -445,5 +481,3 @@ QString MainWindow::getOpenFileName()
 
     return fileName;
 }
-
-
