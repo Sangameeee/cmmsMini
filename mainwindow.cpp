@@ -83,8 +83,8 @@ void MainWindow::buttonDisplays()
 
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addLayout(hlayout);
     layout->addWidget(table);
+    layout->addLayout(hlayout);
 
 
     QWidget *centralWidget = new QWidget;
