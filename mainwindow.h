@@ -50,8 +50,8 @@ private:
     QString currentTableName;
 
 
-//private slots:
-//    void on_tableWidget_cellClicked(int row, int column);
+    //private slots:
+    //    void on_tableWidget_cellClicked(int row, int column);
 };
 
 #endif // MAINWINDOW_H

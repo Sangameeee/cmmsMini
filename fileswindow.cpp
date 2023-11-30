@@ -34,23 +34,23 @@ void filesWindow::on_pushButton_clicked()
         QMessageBox::warning(this, "Error", "enter a name it cannot be empty");
     }
     else{
-    hide();
-    QFile ufile("files.txt");
+        hide();
+        QFile ufile("files.txt");
 
-    if (!ufile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
+        if (!ufile.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
 
-        QMessageBox::warning(this, "Error", "Failed: " + ufile.errorString());
-    }
-    else
-    {
-        QTextStream stream(&ufile);
-        stream << filesValue->text() ;
-        ufile.close();
+            QMessageBox::warning(this, "Error", "Failed: " + ufile.errorString());
+        }
+        else
+        {
+            QTextStream stream(&ufile);
+            stream << filesValue->text() ;
+            ufile.close();
 
-    }
-    mainwindow = new MainWindow(this);
-    mainwindow->show();
+        }
+        mainwindow = new MainWindow(this);
+        mainwindow->show();
     }
 }
 

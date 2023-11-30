@@ -38,9 +38,9 @@ void secWindow::on_pushButton_clicked()
 
         if(username == userwrittenname && password == userwrittenpassword)
         {
-//            hide();
-//            mainwindow = new MainWindow(this);
-//            mainwindow->show();
+            //            hide();
+            //            mainwindow = new MainWindow(this);
+            //            mainwindow->show();
             hide();
             filesWindow *filewindow = new filesWindow(this);
             filewindow->setWindowTitle("class");

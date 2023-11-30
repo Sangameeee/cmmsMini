@@ -92,13 +92,13 @@ void MainWindow::buttonDisplays()
     this->setCentralWidget(centralWidget);
 
     // Connect signals and slots for the buttons
-//    connect(addRowButton, &QPushButton::clicked, this, &MainWindow::on_addRowButton_clicked);
-//    connect(addColumnButton, &QPushButton::clicked, this, &MainWindow::on_columnAddButton_clicked);
-//    connect(subColumnButton, &QPushButton::clicked, this, &MainWindow::on_buttonSub_clicked);
-//    connect(clearButton, &QPushButton::clicked, this, &MainWindow::on_clearButton_clicked);
-//    connect(calButton, &QPushButton::clicked, this, &MainWindow::on_calButton_clicked);
-//    connect(button, &QPushButton::clicked, this, &MainWindow::on_pushButton_clicked);
-//    connect(lbutton, &QPushButton::clicked, this, &MainWindow::on_loadButton_clicked);
+    //    connect(addRowButton, &QPushButton::clicked, this, &MainWindow::on_addRowButton_clicked);
+    //    connect(addColumnButton, &QPushButton::clicked, this, &MainWindow::on_columnAddButton_clicked);
+    //    connect(subColumnButton, &QPushButton::clicked, this, &MainWindow::on_buttonSub_clicked);
+    //    connect(clearButton, &QPushButton::clicked, this, &MainWindow::on_clearButton_clicked);
+    //    connect(calButton, &QPushButton::clicked, this, &MainWindow::on_calButton_clicked);
+    //    connect(button, &QPushButton::clicked, this, &MainWindow::on_pushButton_clicked);
+    //    connect(lbutton, &QPushButton::clicked, this, &MainWindow::on_loadButton_clicked);
 
 }
 
@@ -134,10 +134,10 @@ void MainWindow::on_clearButton_clicked()
 
 void MainWindow::on_calButton_clicked()
 {
-//    ValWindow valuesWin(ui->tableWidget);
-//    valuesWin.setWindowTitle("Values");
-//    valuesWin.setModal(true);
-//    valuesWin.exec();
+    //    ValWindow valuesWin(ui->tableWidget);
+    //    valuesWin.setWindowTitle("Values");
+    //    valuesWin.setModal(true);
+    //    valuesWin.exec();
     calculateValues();
 }
 
