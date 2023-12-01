@@ -25,11 +25,14 @@
      <rect>
       <x>1</x>
       <y>1</y>
-      <width>897</width>
+      <width>819</width>
       <height>226</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QTableWidget" name="tableWidget"/>
+     </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -54,9 +57,6 @@
           </sizepolicy>
          </property>
         </widget>
-       </item>
-       <item>
-        <widget class="QTableWidget" name="tableWidget"/>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton">
@@ -132,9 +132,41 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="clearButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>CLEAR</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="calButton">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>390</y>
+      <width>83</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Calculate</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -146,8 +178,38 @@
      <height>25</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave"/>
+    <addaction name="actionLoad"/>
+    <addaction name="actionPrint"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="text">
+    <string>Print</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
