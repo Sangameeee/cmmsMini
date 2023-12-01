@@ -27,9 +27,12 @@ private slots:
 
     void on_buttonSub_clicked();
 
-    void on_clearButton_clicked();
+//    void on_clearButton_clicked();
 
-    void on_calButton_clicked();
+//    void on_calButton_clicked();
+
+    void on_headerClicked(int column);
+    void convertColumn(int columnIndex, int originalTotal, int conversionTotal, const QString &columnName);
 
 private:
     Ui::MainWindow *ui;
@@ -50,8 +53,8 @@ private:
     QString currentTableName;
 
 
-    //private slots:
-    //    void on_tableWidget_cellClicked(int row, int column);
+//private slots:
+//    void on_tableWidget_cellClicked(int row, int column);
 };
 
 #endif // MAINWINDOW_H
