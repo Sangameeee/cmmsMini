@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include"secwindow.h"
+#include<QtPrintSupport/QPrinter>
+#include<QtPrintSupport/QPrintDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,6 +35,12 @@ private slots:
 
     void on_headerClicked(int column);
     void convertColumn(int columnIndex, int originalTotal, int conversionTotal, const QString &columnName);
+
+    void on_actionSave_triggered();
+
+    void on_actionLoad_triggered();
+
+    void on_actionPrint_triggered();
 
 private:
     Ui::MainWindow *ui;
