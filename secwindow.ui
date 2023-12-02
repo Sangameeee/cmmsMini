@@ -71,7 +71,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="createButton">
    <property name="geometry">
     <rect>
      <x>660</x>

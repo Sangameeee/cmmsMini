@@ -21,12 +21,14 @@ public:
 private slots:
     void on_pushButton_clicked();
 
-    void on_pushButton_2_clicked();
+
+    void on_createButton_clicked();
 
 private:
     Ui::secWindow *ui;
     NewID *newId;
     QMainWindow *mainwindow;
+    void createButtonDisplays();
     //filesWindow *filewindow;
 };
 
