@@ -44,8 +44,8 @@ private:
     void rowManipulation();
     void columnManipulation();
     void columnRemover();
-//    void removeAll();
-//    void calculateValues();
+    void removeAll();
+    void calculateValues();
     bool isInteger(const QString&);
     void showAllTables();
     QString getSaveFileName();

@@ -3,8 +3,9 @@
 #include<QMessageBox>
 #include<Qfile>
 #include<QTextStream>
-#include"fileswindow.h"
 #include<QFileInfo>
+#include"fileswindow.h"
+#include"encryption.h"
 
 secWindow::secWindow(QWidget *parent) :
     QDialog(parent),
@@ -20,8 +21,9 @@ secWindow::~secWindow()
 }
 void secWindow::createButtonDisplays()
 {
-    QPushButton *createButton = ui->createButton;
+    QPushButton *createButton = ui->pushButton_2;
     createButton->hide();
+    this->setWindowTitle("LOGIN");
     QFile urfile("username.txt");
     QFile prfile("password.txt");
     QFileInfo urinfo(urfile);
@@ -32,11 +34,9 @@ void secWindow::createButtonDisplays()
     }
     else
     {
-    createButton->hide();
+        createButton->hide();
     }
-
 }
-
 void secWindow::on_pushButton_clicked()
 {
 
@@ -55,14 +55,14 @@ void secWindow::on_pushButton_clicked()
         QString userwrittenpassword = pstream.readLine();
         urfile.close();
         prfile.close();
-
+     decrypt(userwrittenpassword); // Decrypt the stored password for comparison
         if(username == userwrittenname && password == userwrittenpassword)
         {
-            hide();
-            mainwindow = new MainWindow(this);
-            mainwindow->show();
+            hide();  //comment this and uncomment below to show mainwindow
+            mainwindow = new MainWindow(this); //
+            mainwindow->show(); //
 //            hide();
-//            filesWindow *filewindow = new filesWindow(this);
+//            filesWindow *filewindow = new filesWindow(this); // to show fileswindow uncomment this
 //            filewindow->setWindowTitle("class");
 //            filewindow->show();
 
@@ -77,15 +77,11 @@ void secWindow::on_pushButton_clicked()
             }
         }
     }
-
+    encrypt(password);
 }
 
 
-
-
-
-
-void secWindow::on_createButton_clicked()
+void secWindow::on_pushButton_2_clicked()
 {
     newId = new NewID(this);
     newId->setWindowTitle("Create Username and Id");

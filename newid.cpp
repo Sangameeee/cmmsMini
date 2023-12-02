@@ -7,7 +7,7 @@
 #include<QMessageBox>
 #include<Qfile>
 #include<QTextStream>
-
+#include "encryption.h"
 
 NewID::NewID(QWidget *parent) :
     QDialog(parent),
@@ -38,6 +38,8 @@ void NewID::on_pushButton_clicked()
         return;
     }
 
+    // Encrypt the password before saving
+    encrypt(password);
     QFile ufile("username.txt");
     QFile pfile("password.txt");
 
