@@ -84,6 +84,19 @@
     <string>CreateID</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="forgotPasswordButton">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>310</y>
+     <width>141</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Forgot </string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
