@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>about.png</file>
+        <file>clear.jpg</file>
+        <file>home.png</file>
+        <file>print.png</file>
+    </qresource>
+</RCC>
