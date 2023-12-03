@@ -15,6 +15,7 @@
 #include <QPageSize>
 #include <QHeaderView>
 #include <QFontMetrics>
+#include <QCoreApplication>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -549,23 +550,37 @@ QString MainWindow::getOpenFileName()
 void MainWindow::on_actionSave_triggered()
 {
     QTableWidget *table = ui->tableWidget;
-    QString fileName = getSaveFileName();
+
+    QStringList previousFiles; // Populate this with previous file names
+
+    // Additional customization: Make user input case-insensitive
+    QString fileName = showSaveDialog(previousFiles).toLower();
+
     if (fileName.isEmpty())
     {
         return;  // User canceled the operation
     }
 
-    QFile file(fileName);
+    // Ensure that the file has the .csv extension
+    if (!fileName.endsWith(".csv"))
+    {
+        fileName += ".csv";
+    }
 
     // Check for empty cells and set red border
-    for (int row = 0; row < table->rowCount(); ++row) {
-        for (int col = 0; col < table->columnCount(); ++col) {
+    for (int row = 0; row < table->rowCount(); ++row)
+    {
+        for (int col = 0; col < table->columnCount(); ++col)
+        {
             QTableWidgetItem *item = table->item(row, col);
-            if (!item || item->text().isEmpty()) {
+            if (!item || item->text().isEmpty())
+            {
                 table->setItem(row, col, new QTableWidgetItem());
                 table->item(row, col)->setBackground(QBrush(Qt::red));
                 table->item(row, col)->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled);
-            } else {
+            }
+            else
+            {
                 table->item(row, col)->setBackground(QBrush(Qt::white)); // Reset background color
                 table->item(row, col)->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled);
             }
@@ -573,22 +588,28 @@ void MainWindow::on_actionSave_triggered()
     }
 
     // Continue with saving if no empty cells are found
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
         QTextStream out(&file);
 
         // Write header
         QStringList headers;
-        for (int col = 0; col < table->columnCount(); ++col) {
+        for (int col = 0; col < table->columnCount(); ++col)
+        {
             headers << table->horizontalHeaderItem(col)->text();
         }
         out << headers.join(",") << "\n";
 
         // Write data
-        for (int row = 0; row < table->rowCount(); ++row) {
+        for (int row = 0; row < table->rowCount(); ++row)
+        {
             QStringList rowData;
-            for (int col = 0; col < table->columnCount(); ++col) {
+            for (int col = 0; col < table->columnCount(); ++col)
+            {
                 QTableWidgetItem *item = table->item(row, col);
-                if (item) {
+                if (item)
+                {
                     rowData << item->text();
                 }
             }
@@ -597,9 +618,27 @@ void MainWindow::on_actionSave_triggered()
 
         file.close();
         QMessageBox::information(this, "Table Values Saved", "The table values were successfully stored.");
-    } else {
-        QMessageBox::critical(this, "Error Saving Table Values", "An error occurred while trying to save the table values to a file.");
     }
+    else
+    {
+        QMessageBox::critical(this, "Error Saving Table Values", "An error occurred while trying to save the table values to a file: " + file.errorString());
+    }
+}
+
+
+QString MainWindow::showSaveDialog(const QStringList &previousFiles)
+{
+    bool ok;
+    return QInputDialog::getItem(this, "Save File",
+                                 "Select a file or enter a new file name:",
+                                 previousFiles, 0, false, &ok);
+}
+
+QString MainWindow::showNewFileDialog()
+{
+    bool ok;
+    return QInputDialog::getText(this, "Save As New File",
+                                 "Enter a new file name:", QLineEdit::Normal, "", &ok);
 }
 
 
