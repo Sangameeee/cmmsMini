@@ -71,18 +71,37 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>660</x>
-     <y>20</y>
-     <width>80</width>
-     <height>24</height>
+     <x>680</x>
+     <y>10</y>
+     <width>82</width>
+     <height>67</height>
     </rect>
    </property>
-   <property name="text">
-    <string>CreateID</string>
-   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QPushButton" name="forgotPasswordButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Forgot </string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="text">
+       <string>CreateID</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
