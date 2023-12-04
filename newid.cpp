@@ -1,3 +1,4 @@
+//newid.cpp
 #include "newid.h"
 #include "ui_newid.h"
 //#include<fstream>
@@ -23,8 +24,6 @@ NewID::~NewID()
 
 void NewID::on_pushButton_clicked()
 {
-
-
     QString username = ui->lineEdit_username2->text();
     QString password = ui->lineEdit_password2->text();
 
@@ -41,32 +40,24 @@ void NewID::on_pushButton_clicked()
     // Encrypt the password before saving
     encrypt(password);
     QFile ufile("username.txt");
-    QFile pfile("password.txt");
-
-    if (!ufile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-
+    if (!ufile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(this, "Error", "Failed: " + ufile.errorString());
-    }
-    else
-    {
+    } else {
         QTextStream stream(&ufile);
         stream << username;
         ufile.close();
-
     }
-    if (!pfile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
 
+    QFile pfile("password.txt");
+    if (!pfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(this, "Error", "Failed: " + pfile.errorString());
-    }
-    else
-    {
+    } else {
         QTextStream stream(&pfile);
         stream << password;
         pfile.close();
+
+        // Set file permissions to hide the file
+        QFile::setPermissions("password.txt", QFile::ReadOwner | QFile::WriteOwner);
         QMessageBox::about(this, "Username set", "Username and Password created");
     }
-
-
 }
