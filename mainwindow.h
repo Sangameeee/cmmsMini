@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include"secwindow.h"
+#include<QtPrintSupport/QPrinter>
+#include<QtPrintSupport/QPrintDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -34,6 +36,18 @@ private slots:
     void on_headerClicked(int column);
     void convertColumn(int columnIndex, int originalTotal, int conversionTotal, const QString &columnName);
 
+    void on_actionSave_triggered();
+
+    void on_actionLoad_triggered();
+
+    void on_actionPrint_triggered();
+
+    void on_clear_triggered();
+
+    void on_actionQt_Version_triggered();
+
+    void on_calculateButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     //secWindow *secwindow;
@@ -51,7 +65,12 @@ private:
     QString getSaveFileName();
     QString getOpenFileName();
     QString currentTableName;
-
+    int totalColumnIndex;
+    QStringList parseExpression(const QString &expression);
+    int findOrCreateResultColumn(const QStringList &columnHeaders);
+    void calculateResult(const QString &expression);
+    double evaluateExpressionForRow(const QString &expression, int row);
+    QString resultColumnName;
 
 //private slots:
 //    void on_tableWidget_cellClicked(int row, int column);
