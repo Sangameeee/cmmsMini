@@ -632,7 +632,7 @@ QString MainWindow::showSaveDialog(const QStringList &previousFiles)
 {
     bool ok;
     return QInputDialog::getItem(this, "Save File",
-                                 "Select a file or enter a new file name:",
+                                 "Enter the faculty:",
                                  previousFiles, 0, false, &ok);
 }
 
@@ -654,7 +654,7 @@ void MainWindow::on_actionLoad_triggered()
     QString fileName = QDir::currentPath() + "/" + tableName + ".csv";
 
     if (!QFile::exists(fileName)) {
-        QMessageBox::critical(this, "Error", "File not found. Please enter a valid table name.");
+        QMessageBox::critical(this, "Error", "Faculty not found. Please enter a valid Faculty name.");
         return;
     }
 
@@ -691,7 +691,7 @@ void MainWindow::on_actionLoad_triggered()
         }
 
         file.close();
-        QMessageBox::information(this, "Table Values Loaded", "The table values from file " + QFileInfo(fileName).fileName() + " were successfully loaded.");
+        QMessageBox::information(this, "Table Values Loaded", "The values from file " + QFileInfo(fileName).fileName() + " were successfully loaded.");
     } else {
         QMessageBox::critical(this, "Error Loading Table Values", "An error occurred while trying to load the table values from the file.");
     }
