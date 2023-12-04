@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include"secwindow.h"
+#include<QtPrintSupport/QPrinter>
+#include<QtPrintSupport/QPrintDialog>
+#include <QTableWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -13,7 +16,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -34,6 +37,12 @@ private slots:
     void on_headerClicked(int column);
     void convertColumn(int columnIndex, int originalTotal, int conversionTotal, const QString &columnName);
 
+    void on_actionSave_triggered();
+
+    void on_actionLoad_triggered();
+
+    void on_actionPrint_triggered();
+
 private:
     Ui::MainWindow *ui;
     //secWindow *secwindow;
@@ -51,6 +60,8 @@ private:
     QString getSaveFileName();
     QString getOpenFileName();
     QString currentTableName;
+    QString showSaveDialog(const QStringList &previousFiles);
+    QString showNewFileDialog();
 
 
 //private slots:
