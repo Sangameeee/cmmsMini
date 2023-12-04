@@ -1,9 +1,12 @@
+//mainwindow.h
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include"secwindow.h"
 
+#include<QtPrintSupport/QPrinter>
+#include<QtPrintSupport/QPrintDialog>
+class secWindow;
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -34,9 +37,23 @@ private slots:
     void on_headerClicked(int column);
     void convertColumn(int columnIndex, int originalTotal, int conversionTotal, const QString &columnName);
 
+    void on_actionSave_triggered();
+
+    void on_actionLoad_triggered();
+
+    void on_actionPrint_triggered();
+
+    void on_clear_triggered();
+
+    void on_actionQt_Version_triggered();
+
+    void on_actionClear_All_triggered();
+
+    // void on_actionHome_triggered();
+
 private:
     Ui::MainWindow *ui;
-    //secWindow *secwindow;
+    secWindow *secWindow1;
     void TableWidgetDisplay();
     void buttonDisplays();
     void storeTableValues();
@@ -51,6 +68,9 @@ private:
     QString getSaveFileName();
     QString getOpenFileName();
     QString currentTableName;
+    QString showSaveDialog(const QStringList &previousFiles);
+    QString showNewFileDialog();
+
 
 
 //private slots:

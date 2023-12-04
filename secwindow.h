@@ -1,11 +1,12 @@
+//secwindow.h
 #ifndef SECWINDOW_H
 #define SECWINDOW_H
 
 #include <QDialog>
 #include"newid.h"
-#include"mainwindow.h"
+#include "forgotpassword.h"
 #include"fileswindow.h"
-
+class MainWindow;
 namespace Ui {
 class secWindow;
 }
@@ -18,17 +19,25 @@ public:
     explicit secWindow(QWidget *parent = nullptr);
     ~secWindow();
 
+
 private slots:
     void on_pushButton_clicked();
 
     void on_pushButton_2_clicked();
 
+    void on_forgotPasswordButton_clicked();
+
+
 private:
+
     Ui::secWindow *ui;
     NewID *newId;
+    forgotpassword *forgot;
     QMainWindow *mainwindow;
     void createButtonDisplays();
     //filesWindow *filewindow;
+
+
 };
 
 #endif // SECWINDOW_H
