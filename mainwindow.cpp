@@ -18,6 +18,7 @@
 #include <QCoreApplication>
 #include <QListWidget>
 #include <QFileInfo>
+#include <QTextOption>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -238,9 +239,8 @@ int MainWindow::findOrCreateResultColumn(const QStringList &columnHeaders)
 {
     QTableWidget *table = ui->tableWidget;
 
-    // Find or create the result column using the provided name
+    // Find the result column using the provided name
     int resultColumnIndex = -1;
-
     for (int col = 0; col < table->columnCount(); ++col) {
         if (table->horizontalHeaderItem(col)->text().compare(resultColumnName, Qt::CaseInsensitive) == 0) {
             resultColumnIndex = col;
@@ -248,15 +248,25 @@ int MainWindow::findOrCreateResultColumn(const QStringList &columnHeaders)
         }
     }
 
+    // Create a new column with the specified name or override existing column
     if (resultColumnIndex == -1) {
-        // Create a new column with the specified name
         resultColumnIndex = table->columnCount();
         table->setColumnCount(resultColumnIndex + 1);
         table->setHorizontalHeaderItem(resultColumnIndex, new QTableWidgetItem(resultColumnName));
     }
 
+    // Clear existing column values
+    for (int row = 0; row < table->rowCount(); ++row) {
+        QTableWidgetItem *item = table->item(row, resultColumnIndex);
+        if (item) {
+            item->setText("");
+        }
+    }
+
     return resultColumnIndex;
 }
+
+
 
 
 bool MainWindow::isOperator(const QString &token) {
@@ -889,7 +899,7 @@ void MainWindow::on_actionLoad_triggered()
     }
 }
 
-
+#include <QTextOption>
 
 void MainWindow::on_actionPrint_triggered()
 {
@@ -903,18 +913,17 @@ void MainWindow::on_actionPrint_triggered()
     // Set the number of copies to 1
     printer.setCopyCount(1);
 
+    // Set the page size to match the full screen size
+    printer.setPageSize(QPageSize(this->geometry().size(), QPageSize::Point));
+
     QPainter painter;
     painter.begin(&printer);
 
     QTableWidget *table = ui->tableWidget;
 
-    // Get the A4 page size
-    QPageSize pageSize(QPageSize::A4);
-    QSizeF printableSize = pageSize.size(QPageSize::Point);
-
-    // Calculate total width and height of the table
+    // Calculate total width and height of the table, including column headers
     int totalWidth = 0;
-    int totalHeight = 0;
+    int totalHeight = table->horizontalHeader()->height(); // Include height of column headers
 
     for (int col = 0; col < table->columnCount(); ++col)
         totalWidth += table->columnWidth(col);
@@ -922,25 +931,17 @@ void MainWindow::on_actionPrint_triggered()
     for (int row = 0; row < table->rowCount(); ++row)
         totalHeight += table->rowHeight(row);
 
-    // Calculate the scale factor to fit the table into the printable area
-    qreal scaleX = printableSize.width() / qreal(totalWidth);
-    qreal scaleY = printableSize.height() / qreal(totalHeight);
+    // Calculate the scale factor to fit the table into the full screen
+    qreal scaleX = 1.5; // Increase width by 50%
+    qreal scaleY = printer.height() / qreal(totalHeight);
     qreal scale = qMin(scaleX, scaleY);
 
     // Set the transformation matrix to scale the painter
-    painter.scale(scale, scale);
+    painter.scale(scale, scaleY);
 
     // Adjust font size based on the scaling factor
     QFont font = painter.font();
     font.setPointSizeF(font.pointSizeF() * scale);
-    painter.setFont(font);
-
-    // Calculate maximum font size to fit within cell width and height
-    QFontMetrics metrics(font);
-    int maxFontSize = qMin(metrics.height(), table->columnWidth(0) / table->horizontalHeader()->count());
-
-    // Set the font size to the maximum calculated font size
-    font.setPointSize(maxFontSize);
     painter.setFont(font);
 
     int yOffset = 0;
@@ -948,22 +949,41 @@ void MainWindow::on_actionPrint_triggered()
     // Draw table heading on each page
     for (int col = 0; col < table->columnCount(); ++col) {
         if (!table->isColumnHidden(col) && table->columnWidth(col) > 0) {
-            painter.drawText(QRect(table->columnViewportPosition(col), yOffset, table->columnWidth(col), table->rowHeight(0)),
-                             Qt::AlignCenter, table->horizontalHeaderItem(col)->text());
+            // Calculate the scaled column width
+            int columnWidth = table->columnWidth(col) * scale;
+
+            // Draw text with word wrap (up to 15 words)
+            QTextOption textOption;
+            textOption.setWrapMode(QTextOption::WordWrap);
+            textOption.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+
+            QRect cellRect(table->columnViewportPosition(col), yOffset, columnWidth, table->horizontalHeader()->height());
+            painter.drawText(cellRect, table->horizontalHeaderItem(col)->text(), textOption);
+
+            // Draw cell borders
+            painter.drawRect(cellRect);
         }
     }
 
-    yOffset += table->rowHeight(0);
+    yOffset += table->horizontalHeader()->height();
 
     // Draw each cell on the current page
     for (int row = 0; row < table->rowCount(); ++row) {
         for (int col = 0; col < table->columnCount(); ++col) {
             if (!table->isColumnHidden(col) && table->columnWidth(col) > 0) {
-                painter.drawText(QRect(table->columnViewportPosition(col), yOffset, table->columnWidth(col), table->rowHeight(row)),
-                                 Qt::AlignCenter | Qt::AlignVCenter, table->item(row, col) ? table->item(row, col)->text() : "");
+                // Calculate the scaled column width
+                int columnWidth = table->columnWidth(col) * scale;
+
+                // Draw text with word wrap (up to 15 words)
+                QTextOption textOption;
+                textOption.setWrapMode(QTextOption::WordWrap);
+                textOption.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+
+                QRect cellRect(table->columnViewportPosition(col), yOffset, columnWidth, table->rowHeight(row));
+                painter.drawText(cellRect, table->item(row, col) ? table->item(row, col)->text() : "", textOption);
 
                 // Draw cell borders
-                painter.drawRect(QRect(table->columnViewportPosition(col), yOffset, table->columnWidth(col), table->rowHeight(row)));
+                painter.drawRect(cellRect);
             }
         }
         yOffset += table->rowHeight(row);
@@ -971,6 +991,19 @@ void MainWindow::on_actionPrint_triggered()
 
     painter.end();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
